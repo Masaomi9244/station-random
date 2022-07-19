@@ -8,11 +8,6 @@ type Props = {
   };
 };
 
-type PreObj = {
-  id: number;
-  prefecture: string;
-};
-
 // SGで都道府県一覧を取得
 export const getStaticProps = async () => {
   const URL: string =
@@ -28,24 +23,28 @@ export const getStaticProps = async () => {
 };
 
 const Home: NextPage<Props> = (props: Props) => {
-  const prefectures: string[] = props.prefectures.response.prefecture;
+  // プルダウン変更後の値を保持する変数
+  let selectPrefecture: string = "北海道";
 
-  // prefecturesをkeyがあるオブジェクトに格納する
-  let preObjArray: PreObj[] = [];
-  for (let i = 0; i < prefectures.length; i++) {
-    const preObj: PreObj = {
-      id: i,
-      prefecture: prefectures[i],
-    };
-    preObjArray.push(preObj);
-  }
+  // プルダウンが変更されたときに、変数に変更後の値を格納する
+  const handleChange = (e: { target: { value: string } } | undefined) => {
+    if (e) {
+      selectPrefecture = e.target.value;
+    }
+  };
+
+  const prefectures: string[] = props.prefectures.response.prefecture;
 
   return (
     <div>
       <span>都道府県: </span>
-      <select name="prefecture">
-        {preObjArray.map((preObj) => {
-          return <option key={preObj.id}>{preObj.prefecture}</option>;
+      <select name="prefecture" onChange={handleChange}>
+        {prefectures.map((prefecture, i) => {
+          return (
+            <option key={i} value={prefecture}>
+              {prefecture}
+            </option>
+          );
         })}
       </select>
     </div>
