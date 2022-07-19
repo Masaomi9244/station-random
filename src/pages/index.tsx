@@ -23,12 +23,22 @@ export const getStaticProps = async () => {
 };
 
 const Home: NextPage<Props> = (props: Props) => {
+  // プルダウン変更後の値を保持する変数
+  let selectPrefecture: string = "北海道";
+
+  // プルダウンが変更されたときに、変数に変更後の値を格納する
+  const handleChange = (e: { target: { value: string } } | undefined) => {
+    if (e) {
+      selectPrefecture = e.target.value;
+    }
+  };
+
   const prefectures: string[] = props.prefectures.response.prefecture;
 
   return (
     <div>
       <span>都道府県: </span>
-      <select name="prefecture">
+      <select name="prefecture" onChange={handleChange}>
         {prefectures.map((prefecture, i) => {
           return (
             <option key={i} value={prefecture}>
