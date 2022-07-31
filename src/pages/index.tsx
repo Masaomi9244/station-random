@@ -1,4 +1,6 @@
 import type { NextPage } from "next";
+import Router from "next/router";
+import { useState } from "react";
 
 type Props = {
   prefectures: {
@@ -6,11 +8,6 @@ type Props = {
       prefecture: string[];
     };
   };
-};
-
-type PreObj = {
-  id: number;
-  prefecture: string;
 };
 
 // SGで都道府県一覧を取得
@@ -28,26 +25,39 @@ export const getStaticProps = async () => {
 };
 
 const Home: NextPage<Props> = (props: Props) => {
+  const [prefecture, setPrefecture] = useState("");
+
+  // SGで取得した都道府県一覧
   const prefectures: string[] = props.prefectures.response.prefecture;
 
-  // prefecturesをkeyがあるオブジェクトに格納する
-  let preObjArray: PreObj[] = [];
-  for (let i = 0; i < prefectures.length; i++) {
-    const preObj: PreObj = {
-      id: i,
-      prefecture: prefectures[i],
-    };
-    preObjArray.push(preObj);
-  }
+  // プルダウンが変更されたときに、変数に変更後の値を格納する
+  const handleChange = (e: { target: { value: string } } | undefined) => {
+    if (e) {
+      setPrefecture(e.target.value);
+    }
+  };
+
+  // 検索ボタンを押下したとき、リザルト画面に遷移する
+  const handleClick = () => {
+    Router.push({
+      pathname: "/result",
+      query: { pre: prefecture },
+    });
+  };
 
   return (
     <div>
       <span>都道府県: </span>
-      <select name="prefecture">
-        {preObjArray.map((preObj) => {
-          return <option key={preObj.id}>{preObj.prefecture}</option>;
+      <select name="prefecture" onChange={handleChange}>
+        {prefectures.map((prefecture, i) => {
+          return (
+            <option key={i} value={prefecture}>
+              {prefecture}
+            </option>
+          );
         })}
       </select>
+      <button onClick={() => handleClick()}>検索</button>
     </div>
   );
 };
