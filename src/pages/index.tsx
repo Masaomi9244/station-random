@@ -1,4 +1,6 @@
 import type { NextPage } from "next";
+import Router from "next/router";
+import { useState } from "react";
 
 type Props = {
   prefectures: {
@@ -23,17 +25,25 @@ export const getStaticProps = async () => {
 };
 
 const Home: NextPage<Props> = (props: Props) => {
-  // プルダウン変更後の値を保持する変数
-  let selectPrefecture: string = "北海道";
+  const [prefecture, setPrefecture] = useState("");
+
+  // SGで取得した都道府県一覧
+  const prefectures: string[] = props.prefectures.response.prefecture;
 
   // プルダウンが変更されたときに、変数に変更後の値を格納する
   const handleChange = (e: { target: { value: string } } | undefined) => {
     if (e) {
-      selectPrefecture = e.target.value;
+      setPrefecture(e.target.value);
     }
   };
 
-  const prefectures: string[] = props.prefectures.response.prefecture;
+  // 検索ボタンを押下したとき、リザルト画面に遷移する
+  const handleClick = () => {
+    Router.push({
+      pathname: "/result",
+      query: { pre: prefecture },
+    });
+  };
 
   return (
     <div>
@@ -47,6 +57,7 @@ const Home: NextPage<Props> = (props: Props) => {
           );
         })}
       </select>
+      <button onClick={() => handleClick()}>検索</button>
     </div>
   );
 };
