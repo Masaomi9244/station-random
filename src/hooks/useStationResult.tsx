@@ -1,28 +1,29 @@
-import { useStationFetch } from "src/hooks/useStationFetch";
-import { Props } from "src/pages/result";
+import { Props, UseStationFetchResponse } from "src/types/result";
 import { API_URL } from "src/utils/const";
+import { useStationFetch } from "./useStationFetch";
 
-export const useStationResult = (Props: Props) => {
-  const stationUrl =
+export const useStationResult = (Props: Props): string => {
+  const url: string =
     API_URL +
     "getStations&line=" +
     Props.line +
     "&prefecture=" +
     Props.prefecture;
 
-  const { data, error, isLoading } = useStationFetch(stationUrl);
+  const { data, error, isLoading }: UseStationFetchResponse =
+    useStationFetch(url);
+
   if (error) {
     return "エラーが発生しました。";
   }
 
-  if (isLoading || !data?.response.station) {
+  if (isLoading || !data || !data.response.station) {
     return "ロード中です。";
   }
 
   const randomNumber: number = Math.floor(
     Math.random() * data.response.station.length
   );
-  const station = data.response.station[randomNumber].name;
 
-  return station;
+  return data.response.station[randomNumber].name;
 };

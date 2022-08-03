@@ -1,14 +1,12 @@
+import { Error } from "src/types/common";
+import { LineData, UseLineFetch, UseLineFetchResponse } from "src/types/result";
 import { fetcher } from "src/utils/fetcher";
 import useSWR, { SWRResponse } from "swr";
 
-type Response = {
-  response: {
-    line: string;
-  };
-};
-
-export const useLineFetch = (url: string) => {
-  const { data, error }: SWRResponse<Response, any> = useSWR(url, fetcher);
+export const useLineFetch: UseLineFetch = (
+  url: string
+): UseLineFetchResponse => {
+  const { data, error }: SWRResponse<LineData, Error> = useSWR(url, fetcher);
 
   return {
     data,
