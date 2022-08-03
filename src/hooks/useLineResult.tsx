@@ -1,10 +1,15 @@
+import {
+  Prefecture,
+  UseLineFetchResponse,
+  UseLineResult,
+} from "src/types/result";
 import { API_URL } from "src/utils/const";
 import { useLineFetch } from "./useLineFetch";
 
-export const useLineResult = (Props: string | string[] | undefined) => {
-  const lineUrl = API_URL + "getLines&prefecture=" + Props;
+export const useLineResult: UseLineResult = (Props: Prefecture): string => {
+  const url: string = API_URL + "getLines&prefecture=" + Props;
 
-  const { data, error, isLoading } = useLineFetch(lineUrl);
+  const { data, error, isLoading }: UseLineFetchResponse = useLineFetch(url);
   if (error) {
     return "検索中にエラーが発生しました。";
   }
@@ -16,7 +21,6 @@ export const useLineResult = (Props: string | string[] | undefined) => {
   const randomNumber: number = Math.floor(
     Math.random() * data.response.line.length
   );
-  const line = data.response.line[randomNumber];
 
-  return line;
+  return data.response.line[randomNumber];
 };

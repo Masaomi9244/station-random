@@ -1,21 +1,24 @@
 import type { NextPage } from "next";
 import Router from "next/router";
-import { useState } from "react";
-
-type Props = {
-  prefectures: {
-    response: {
-      prefecture: string[];
-    };
-  };
-};
+import { Dispatch, SetStateAction, useState } from "react";
+import {
+  GetStaticProps,
+  HandleChange,
+  HandleClick,
+  Prefectures,
+  PullDownChangeEvent,
+} from "src/types";
+import { API_URL } from "src/utils/const";
 
 // SGで都道府県一覧を取得
-export const getStaticProps = async () => {
-  const URL: string =
-    "http://express.heartrails.com/api/json?method=getPrefectures";
-  const res: Response = await fetch(URL);
-  const prefectures: Promise<Props> = await res.json();
+export const getStaticProps: GetStaticProps = async (): Promise<{
+  props: {
+    prefectures: Promise<Prefectures>;
+  };
+}> => {
+  const url: string = API_URL + "getPrefectures";
+  const res: Response = await fetch(url);
+  const prefectures: Promise<Prefectures> = await res.json();
 
   return {
     props: {
@@ -24,24 +27,27 @@ export const getStaticProps = async () => {
   };
 };
 
-const Home: NextPage<Props> = (props: Props) => {
-  const [prefecture, setPrefecture] = useState("");
+const Home: NextPage<Prefectures> = (props: Prefectures) => {
+  const [prefecture, setPrefecture]: [
+    string,
+    Dispatch<SetStateAction<string>>
+  ] = useState("");
 
   // SGで取得した都道府県一覧
   const prefectures: string[] = props.prefectures.response.prefecture;
 
   // プルダウンが変更されたときに、変数に変更後の値を格納する
-  const handleChange = (e: { target: { value: string } } | undefined) => {
+  const handleChange: HandleChange = (e: PullDownChangeEvent): void => {
     if (e) {
       setPrefecture(e.target.value);
     }
   };
 
   // 検索ボタンを押下したとき、リザルト画面に遷移する
-  const handleClick = () => {
+  const handleClick: HandleClick = (): void => {
     Router.push({
       pathname: "/result",
-      query: { pre: prefecture },
+      query: { prefecture: prefecture },
     });
   };
 
